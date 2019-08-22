@@ -83,9 +83,9 @@ enum class SampleRate {
 
 
 ///
-/// \brief Media parameters for streaming session.
+/// \brief Media source parameters for streaming session.
 ///
-/// Media parameters.
+/// Media source parameters.
 ///
 struct MediaSource {
 
@@ -127,6 +127,43 @@ struct MediaSource {
   long bitRate;
 };
 
+///
+/// \brief Input source status.
+///
+/// Defines input source states.
+///
+enum class InputSourceStatus {
+    SUCCESS,
+    BUSY,
+    NOT_SUPPORTED,
+    NOT_FOUND,
+    INVALID,
+    FAIL
+};
+
+
+///
+/// Handler function for the input source status.
+///
+/// \param[out] inputSource - the media stream source identifier
+/// (if the camera has support for multiple stream).
+/// \param[out] status - current status of the input media source.
+///
+typedef std::function<void(std::string &inputSource, InputSourceStatus status)> onReceiveInputSourceStatus;
+
+///
+/// Handler function for receiving the media data from the encoder.
+///
+/// \param[out] inputSource - the media stream source identifier
+/// (if the camera has support for multiple stream).
+/// \param[out] encoded - is false, if raw frame requested. (raw frame required for vision ai)
+/// \param[out] mediaType - selected media type
+/// \param[out] framePtr - frame data
+/// \param[out] size - size of the frame
+/// \param[out] timestamp - time stamp of the frame
+///
+typedef std::function<void(std::string &inputSource, bool encoded, MediaType mediaType, void *framePtr, long &size, time_t& timestamp)>onDataReceiveHandler;
+
 class MediaService {
 public:
   MediaService()
@@ -146,9 +183,17 @@ public:
   /// Initializes an audio or video source.
   ///
   /// \param[in] mediaType - selected media type
-  /// \param[in] mediaParams - default parameter and capabilities for the mediaType
+  /// \param[in] mediaSource - default parameter and capabilities for the mediaType
   ///
   virtual void initMediaSource(const MediaType mediaType, const MediaSource mediaSource) = 0;
+
+  ///
+  /// Set a callback for receiving the status of the input source. This will invoke if
+  /// there is any change or failure on the input media source.
+  ///
+  /// \param[in] onReceiveInputSourceStatus - Handler function for the input source status.
+  ///
+  virtual void setInputSourceStatusCallback(onReceiveInputSourceStatus handler) = 0;
 
   ///
   /// Changes parameters for an audio or video source.
@@ -158,7 +203,7 @@ public:
   ///
   /// \param[in] inputSource - source for which media params has changed
   /// \param[in] mediaType - for which media the params has changed
-  /// \param[in] mediaParams - media parametes which has changed for the streaming session
+  /// \param[in] mediaSource - media source parametes which has changed for the streaming session
   ///
   virtual void changeMediaParameters(const std::string &inputSource, const MediaType mediaType, const MediaSource& mediaSource) = 0;
 
@@ -185,10 +230,19 @@ public:
   /// \param[in] mediaType - selected media type
   /// \param[in] framePtr - frame data
   /// \param[in] size - size of the frame
-  /// \param[in] frameProperties - properties of the frame
   /// \param[in] timestamp - time stamp of the frame
   ///
   virtual void getFrame(const std::string &inputSource, const bool encoded, const MediaType mediaType, void *framePtr, long &size, time_t& timestamp) = 0;
+
+  ///
+  /// Set a callback for receiving the data from the encoder.
+  ///
+  /// For receiving the data from the encoder library either getFrame() or
+  /// the setDataReceiveCallback() shall be used.
+  ///
+  /// \param[in] onDataReceiveHandler - Handler function for the encoded data.
+  ///
+  virtual void setDataReceiveCallback(onDataReceiveHandler handler) = 0;
 
   ///
   /// Requests an I-Frame (with PPS and SPS).
