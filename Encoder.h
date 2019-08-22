@@ -20,15 +20,23 @@ public:
 
   void initMediaSource(const MediaType mediaType, const MediaSource mediaSource);
 
+  void setInputSourceStatusCallback(onReceiveInputSourceStatus handler);
+
   void changeMediaParameters(const std::string &inputSource, const MediaType mediaType, const MediaSource& mediaSource); 
 
   void pushEncodedFrame(const std::string &inputSource, const MediaType mediaType, void *framePtr, long size, time_t timestamp, void *outFramePtr, long &outSize);
 
   void getFrame(const std::string &inputSource, const bool encoded, const MediaType mediaType, void *framePtr, long &size, time_t& timestamp);
 
+  void setDataReceiveCallback(onDataReceiveHandler handler);
+
   void requestIntraFrame(const std::string &inputSource, const bool encoded);
 
   void closeMedia(const std::string &inputSource, const MediaType mediaType);
+
+private:
+  onReceiveInputSourceStatus statusHandler;
+  onDataReceiveHandler handler;
 	
 };
 #endif

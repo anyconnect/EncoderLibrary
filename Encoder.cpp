@@ -53,6 +53,12 @@ void Encoder::initMediaSource(const MediaType mediaType, const MediaSource media
 
 }
 
+void Encoder::setInputSourceStatusCallback(onReceiveInputSourceStatus handler) {
+  // Returns the status of the media sources.
+  // This function must be non-blocking.
+  this->statusHandler = handler;
+}
+
 void Encoder::changeMediaParameters(const std::string &inputSource, const MediaType mediaType, const MediaSource& mediaSource) {
   // Change parameters for an audio or video source,
   // (e.g. "bitrate", "fps", "resolution", "samplerate"), and
@@ -68,6 +74,13 @@ void Encoder::getFrame(const std::string &inputSource, const bool encoded, const
   // Returns encoded audio or video to the EncoderService class.
   // Generate an encoded or raw frame from the specified inputSource depending on the "encoded" and "mediaType" parameters.
   // After encoding, copy the data to the *framePtr and specify the size in the "size" variable.
+}
+
+void Encoder::setDataReceiveCallback(onDataReceiveHandler handler)
+{
+  // Returns data received from the camera encoder.
+  // This function must be non-blocking.
+  this->handler = handler;
 }
 
 void Encoder::requestIntraFrame(const std::string &inputSource, const bool encoded) {
