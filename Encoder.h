@@ -28,7 +28,7 @@ public:
 
   void getFrame(const std::string &inputSource, const bool encoded, const MediaType mediaType, void *framePtr, long &size, time_t& timestamp);
 
-  void setDataReceiveCallback(onDataReceiveHandler handler);
+  bool setDataReceiveCallback(onDataReceiveHandler handler);
 
   void requestIntraFrame(const std::string &inputSource, const bool encoded);
 
