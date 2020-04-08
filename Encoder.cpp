@@ -76,7 +76,7 @@ void Encoder::getFrame(const std::string &inputSource, const bool encoded, const
   // After encoding, copy the data to the *framePtr and specify the size in the "size" variable.
 }
 
-void Encoder::setDataReceiveCallback(onDataReceiveHandler handler)
+bool Encoder::setDataReceiveCallback(onDataReceiveHandler handler)
 {
   // Returns data received from the camera encoder.
   // This function must be non-blocking.

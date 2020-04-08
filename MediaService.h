@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <functional>
 
 namespace com {
 namespace anyconnect {
@@ -242,7 +243,10 @@ public:
   ///
   /// \param[in] onDataReceiveHandler - Handler function for the encoded data.
   ///
-  virtual void setDataReceiveCallback(onDataReceiveHandler handler) = 0;
+  /// \return True when encoder will send data asynchronously through the given callback
+  ///         False if encoder will send data synchronously through 'getFrame()' API.
+  ///
+  virtual bool setDataReceiveCallback(onDataReceiveHandler handler) = 0;
 
   ///
   /// Requests an I-Frame (with PPS and SPS).
